@@ -1,21 +1,13 @@
 import torch
 
-
 from model import CustomMobileNetV2, save_model
 from utils import load_data, accuracy
-
-
-
-
-
-
-
 
 # to start tensorboard: (run in console)
 #   tensorboard --logdir (your desired output folder in the hw directory)
 
-# to train FCN:
-#   python -m homework.train_cnn --log_dir dev_p2_1 45 1028 0.05
+# to train model:
+#   python -m train 15 10 0.05
 
 def train(args):
 
@@ -37,9 +29,9 @@ def train(args):
     # test_path = "test_labels.csv"
     train_path ="train_labels.csv"
 
-    train_data = load_data(data_path, train_path, num_workers=0, batch_size=args.batch_size)
+    train_data = load_data(data_path, train_path, num_workers=0, batch_size=args.batch_size, augmentation_flag=True)
 
-    valid_data = load_data(data_path, valid_path, num_workers=0, batch_size=5)
+    valid_data = load_data(data_path, valid_path, num_workers=0, batch_size=5, augmentation_flag=False)
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate)
 
@@ -116,8 +108,10 @@ def train(args):
 
         # print(str(epoch + 1))
 
+    print('\n')
     for s in report_strings:
         print(s)
+    print('\n')
 
 if __name__ == '__main__':
     import argparse

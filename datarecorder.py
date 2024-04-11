@@ -115,12 +115,14 @@ def record_to_file(path):
     wf.writeframes(data)
     wf.close()
 
-base_path = r'C:\Users\David\PycharmProjects\ClapperAI\test_record'
+base_path = r'C:\Users\David\PycharmProjects\ClapperAI\Data\Total'
 
-clap_number = 201
-nc_number = 201
+# manually enter the new starting index for clap and nc samples
+clap_number = 501
+nc_number = 501
 hold_flag = True
 
+# manually set clap_flag: False == nc, True == clap
 clap_flag = False
 
 if clap_flag == True:

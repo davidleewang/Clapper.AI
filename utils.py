@@ -13,21 +13,16 @@ import warnings
 
 import csv
 
-
 def fxn():
     warnings.warn("deprecated", DeprecationWarning)
 
 
 class AudioDataset(Dataset):
-    def __init__(self, dataset_path, label_type):
+    def __init__(self, dataset_path, label_type, augmentation_flag=False):
         """
-        Your code here
-        Hint: Use your solution (or the master solution) to HW1 / HW2
-        Hint: If you're loading (and storing) PIL images here, make sure to call image.load(),
-              to avoid an OS error for too many open files.
-        Hint: Do not store torch.Tensor's as data here, but use PIL images, torchvision.transforms expects PIL images
-              for most transformations.
+
         """
+        self.augmentation_flag = augmentation_flag
         aud_ls = []
         with open(f'{dataset_path}/{label_type}', newline='') as csvfile:
             audreader = csv.reader(csvfile, delimiter=',')
@@ -50,15 +45,14 @@ class AudioDataset(Dataset):
 
     def __len__(self):
         """
-        Your code here
+
         """
         return self.length
 
     def __getitem__(self, idx):
         """
-        Your code here
-        """
 
+        """
 
         image_to_tensor = transforms.ToTensor()
 
@@ -78,25 +72,30 @@ class AudioDataset(Dataset):
             ir_directory = os.path.join(working_directory, 'ir_audio')
 
 
+            # only perform data augmentations if this dataset is a train dataset
+            if self.augmentation_flag == True:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    fxn()
 
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                fxn()
+                    # perform any data augmentations
+                    transform = Compose([
+                        Trim(top_db=30.0, p=0.5),
+                        PitchShift(min_semitones=-5.0, max_semitones=5.0, p=0.5),
+                        ApplyImpulseResponse(ir_path=ir_directory, p=0.5),
+                        AddGaussianSNR(min_snr_db=5.0, max_snr_db=40.0, p=0.5),
+                        Mp3Compression(min_bitrate=32, max_bitrate=64, p=0.5)
+                    ])
 
-                # perform any data augmentations
-                transform = Compose([
-                    Trim(top_db=30.0, p=0.5),
-                    PitchShift(min_semitones=-5.0, max_semitones=5.0, p=0.5),
-                    ApplyImpulseResponse(ir_path=ir_directory, p=0.5),
-                    AddGaussianSNR(min_snr_db=5.0, max_snr_db=40.0, p=0.5),
-                    Mp3Compression(min_bitrate=32, max_bitrate=64, p=0.5)
-                ])
+                    augmented_sound = transform(y, sample_rate=sr)
+                    input_sound = augmented_sound
 
-                augmented_sound = transform(y, sample_rate=sr)
+            else:
+                input_sound = y
 
 
             # convert waveform data to mel spectrogram
-            S = librosa.feature.melspectrogram(y=augmented_sound, sr=sr, n_fft=128, n_mels=20)
+            S = librosa.feature.melspectrogram(y=input_sound, sr=sr, n_fft=128, n_mels=20)
             S_dB = librosa.power_to_db(S, ref=np.max)
 
             # create mel spectrogram image
