@@ -3,6 +3,8 @@ import torch
 from model import CustomMobileNetV2, save_model
 from utils import load_data, accuracy
 
+import csv
+
 # to start tensorboard: (run in console)
 #   tensorboard --logdir (your desired output folder in the hw directory)
 
@@ -40,9 +42,9 @@ def train(args):
     # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'max')
 
     global_step = 0
-    highest_valid_accuracy = 0
     report_strings = []
-    for epoch in range(epochs):
+    training_summary_list = []
+    for epoch in range(1, epochs+1):
         model.train()
         epoch_accuracy_history = []
 
@@ -94,19 +96,23 @@ def train(args):
 
             average_valid_accuracy = sum(valid_accuracy_history) / len(valid_accuracy_history)
 
-        report_string = f'epoch {epoch + 1} \t acc = {round(average_epoch_accuracy, 4)} \t val acc = {round(average_valid_accuracy, 4)}'
+        report_string = f'epoch {epoch} \t acc = {round(average_epoch_accuracy, 4)} \t val acc = {round(average_valid_accuracy, 4)}'
         report_strings.append(report_string)
 
         print(report_string)
-        # print('epoch %-3d \t acc = %0.3f \t val acc = %0.3f' % (epoch, average_epoch_accuracy, average_valid_accuracy))
 
-        # if average_valid_accuracy > highest_valid_accuracy:
-        #     highest_valid_accuracy = average_valid_accuracy
-        #     save_model(model.pretrained_model.classifier[1])
+        training_summary_list.append((epoch, average_epoch_accuracy, average_valid_accuracy))
 
         save_model(model.pretrained_model.classifier[1], epoch)
 
-        # print(str(epoch + 1))
+        with open(r"C:\Users\David\PycharmProjects\ClapperAI\training_outputs\training_summary.csv", 'w') as f:
+            writer = csv.writer(f, lineterminator='\n')
+            writer.writerow(['Epoch', 'Avg Train Acc', 'Avg Valid Acc'])
+            for summary_item in training_summary_list:
+                epoch = summary_item[0]
+                avg_ep_acc = round(summary_item[1], 4)
+                avg_val_acc = round(summary_item[2], 4)
+                writer.writerow([epoch, avg_ep_acc, avg_val_acc])
 
     print('\n')
     for s in report_strings:

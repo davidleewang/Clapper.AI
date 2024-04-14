@@ -135,7 +135,7 @@ def eval(audio, model):
     y, sr = librosa.load(audio, sr=None, mono=True)
 
     # convert waveform data to mel spectrogram
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=128, n_mels=20)
+    S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=32, hop_length=16, n_mels=4)
     S_dB = librosa.power_to_db(S, ref=np.max)
 
     # create mel spectrogram image
