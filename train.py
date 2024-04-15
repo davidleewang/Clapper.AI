@@ -35,7 +35,9 @@ def train(args):
 
     valid_data = load_data(data_path, valid_path, num_workers=0, batch_size=5, augmentation_flag=False)
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate)
+
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
 
     criterion = torch.nn.CrossEntropyLoss()
 

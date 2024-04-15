@@ -3,6 +3,8 @@ from array import array
 from struct import pack
 from model import CustomMobileNetV2
 
+from torchvision import transforms
+
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
@@ -155,10 +157,18 @@ def eval(audio, model):
     buf.close()
     plt.close()
 
+    # transform inage to tensor and turn to expected batch form
+    image_to_tensor = transforms.ToTensor()
+
+
     img = saved_image
-    batch = model.preprocess(img).unsqueeze(0)
+    image_tensor = image_to_tensor(img)
+    batch = image_tensor.unsqueeze(0)
+
+    # make prediction
     prediction = model(batch).squeeze(0).softmax(0).argmax().item()
 
+    # assign prediction
     if prediction == 1:
         print('___CLAP___')
     else:
