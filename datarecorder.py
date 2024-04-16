@@ -115,7 +115,7 @@ def record_to_file(path):
     wf.writeframes(data)
     wf.close()
 
-base_path = r'C:\Users\David\PycharmProjects\ClapperAI\Data\Total'
+base_path = r'Data\Total'
 
 # manually enter the new starting index for clap and nc samples
 clap_number = 501

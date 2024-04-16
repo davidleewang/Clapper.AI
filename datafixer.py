@@ -24,6 +24,9 @@ num_nc_valid_samples = num_valid_samples - num_clap_valid_samples
 rand_clap_list = random.sample(rand_list, num_clap_valid_samples)
 rand_nc_list = random.sample(rand_list, num_nc_valid_samples)
 
+print('This is the number of validation claps:', len(rand_clap_list))
+print('This is the number of validation no-claps:', len(rand_nc_list))
+
 # these are the lists for test labels
 num_test_samples = num_valid_test_samples - num_valid_samples
 
@@ -33,9 +36,12 @@ num_nc_test_samples = num_test_samples - num_clap_test_samples
 rand_clap_test_list = random.sample(rand_list, num_clap_test_samples)
 rand_nc_test_list = random.sample(rand_list, num_nc_test_samples)
 
-with open(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total\train_labels.csv", 'w') as f:
+print('This is the number of test claps:', len(rand_clap_test_list))
+print('This is the number of test no-claps:', len(rand_nc_test_list))
+
+with open(r"Data\Total\train_labels.csv", 'w') as f:
     writer = csv.writer(f, lineterminator='\n')
-    for path, dirs, files in os.walk(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total"):
+    for path, dirs, files in os.walk(r"Data\Total"):
         for filename in files:
             if filename.endswith('.wav'):
                 justname = filename.replace('.wav', '')
@@ -66,9 +72,9 @@ with open(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total\train_labels.csv
                 if exclude != True:
                     writer.writerow([filename, label])
 
-with open(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total\valid_labels.csv", 'w') as f:
+with open(r"Data\Total\valid_labels.csv", 'w') as f:
     writer = csv.writer(f, lineterminator='\n')
-    for path, dirs, files in os.walk(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total"):
+    for path, dirs, files in os.walk(r"Data\Total"):
         for filename in files:
             if filename.endswith('.wav'):
                 justname = filename.replace('.wav', '')
@@ -91,9 +97,9 @@ with open(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total\valid_labels.csv
                 if include == True:
                     writer.writerow([filename, label])
 
-with open(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total\test_labels.csv", 'w') as f:
+with open(r"Data\Total\test_labels.csv", 'w') as f:
     writer = csv.writer(f, lineterminator='\n')
-    for path, dirs, files in os.walk(r"C:\Users\David\PycharmProjects\ClapperAI\Data\Total"):
+    for path, dirs, files in os.walk(r"Data\Total"):
         for filename in files:
             if filename.endswith('.wav'):
                 justname = filename.replace('.wav', '')

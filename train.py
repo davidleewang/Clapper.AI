@@ -29,7 +29,7 @@ def train(args):
     data_path = "Data/Total/"
     valid_path = "valid_labels.csv"
     # test_path = "test_labels.csv"
-    train_path ="train_labels.csv"
+    train_path = "train_labels.csv"
 
     train_data = load_data(data_path, train_path, num_workers=0, batch_size=args.batch_size, augmentation_flag=True)
 
@@ -107,7 +107,7 @@ def train(args):
 
         save_model(model.pretrained_model.classifier[1], epoch)
 
-        with open(r"C:\Users\David\PycharmProjects\ClapperAI\training_outputs\training_summary.csv", 'w') as f:
+        with open(r"training_outputs\training_summary.csv", 'w') as f:
             writer = csv.writer(f, lineterminator='\n')
             writer.writerow(['Epoch', 'Avg Train Acc', 'Avg Valid Acc'])
             for summary_item in training_summary_list:
