@@ -56,7 +56,7 @@ def add_silence(snd_data, seconds):
     r.extend(silence)
     return r
 
-def record():
+def record(clap=True):
     """
     Record a word or words from the microphone and
     return the data as an array of signed shorts.
@@ -73,8 +73,13 @@ def record():
 
     num_silent = 0
     snd_started = False
+    descending_flag = False
 
     r = array('h')
+
+    seconds = 1.5
+    samples_required = seconds * RATE
+    chunks_required = samples_required / CHUNK_SIZE
 
     while 1:
         # little endian, signed short
@@ -83,15 +88,28 @@ def record():
             snd_data.byteswap()
         r.extend(snd_data)
 
-        silent = is_silent(snd_data)
+        # record until two peaks are detected if clap = True
+        if clap:
+            silent = is_silent(snd_data)
 
-        if silent and snd_started:
-            num_silent += 1
-        elif not silent and not snd_started:
-            snd_started = True
+            if silent and snd_started:
+                if not descending_flag:
+                    descending_flag = True
+                else:
+                    num_silent += 1
+            elif not silent and not snd_started:
+                snd_started = True
 
-        if snd_started and num_silent > 30:
-            break
+            if snd_started and num_silent > 30:
+                break
+
+        # record to a fixed length of time if clap = False
+        else:
+            if chunks_required < 0:
+                break
+            else:
+                chunks_required -= 1
+
 
     sample_width = p.get_sample_size(FORMAT)
     stream.stop_stream()
@@ -100,12 +118,12 @@ def record():
 
     # r = normalize(r)
     r = trim(r)
-    # r = add_silence(r, 0.5)
+    r = add_silence(r, 0.5)
     return sample_width, r
 
-def record_to_file(path):
+def record_to_file(path, clap=True):
     "Records from the microphone and outputs the resulting data to 'path'"
-    sample_width, data = record()
+    sample_width, data = record(clap)
     data = pack('<' + ('h'*len(data)), *data)
 
     wf = wave.open(path, 'wb')
@@ -115,6 +133,7 @@ def record_to_file(path):
     wf.writeframes(data)
     wf.close()
 
+
 base_path = r'Data\Total'
 
 # manually enter the new starting index for clap and nc samples
@@ -123,7 +142,7 @@ nc_number = 501
 hold_flag = True
 
 # manually set clap_flag: False == nc, True == clap
-clap_flag = False
+clap_flag = True
 
 if clap_flag == True:
     clap_or_nc = r'\clap'
@@ -136,7 +155,7 @@ while hold_flag == True:
     print("microphone is listening...")
     full_clap_or_nc_filename = base_path + clap_or_nc + str(data_number) + '.wav'
     clap_or_nc_filename = clap_or_nc + str(data_number) + '.wav'
-    record_to_file(full_clap_or_nc_filename)
+    record_to_file(full_clap_or_nc_filename, clap=clap_flag)
     data_number += 1
     print(f"microphone captured event, saved as {clap_or_nc_filename}")
     print('\n')
