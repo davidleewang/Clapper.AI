@@ -57,7 +57,7 @@ class AudioDataset(Dataset):
             label = tuple[1]
 
             # turn .wav file to waveform data using librosa
-            y, sr = librosa.load(f'{self.dataset_path}/{saved_file}', sr=None, mono=True)
+            y, sr = librosa.load(f'{self.dataset_path}/{saved_file}', sr=32000, mono=True)
 
             import os
             from pathlib import Path
@@ -85,7 +85,7 @@ class AudioDataset(Dataset):
 
 
             # convert waveform data to mel spectrogram
-            S = librosa.feature.melspectrogram(y=input_sound, sr=sr, n_fft=32, hop_length=16, n_mels=4)
+            S = librosa.feature.melspectrogram(y=input_sound, sr=sr)
             S_dB = librosa.power_to_db(S, ref=np.max)
 
             # create mel spectrogram image

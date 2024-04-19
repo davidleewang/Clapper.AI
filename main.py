@@ -150,10 +150,10 @@ def load_for_eval():
 def eval(audio, model):
 
     # turn .wav file to waveform data using librosa
-    y, sr = librosa.load(audio, sr=None, mono=True)
+    y, sr = librosa.load(audio, sr=32000, mono=True)
 
     # convert waveform data to mel spectrogram
-    S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=32, hop_length=16, n_mels=4)
+    S = librosa.feature.melspectrogram(y=y, sr=sr)
     S_dB = librosa.power_to_db(S, ref=np.max)
 
     # create mel spectrogram image
