@@ -3,19 +3,12 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from audiomentations import Compose, Trim, ApplyImpulseResponse, Mp3Compression, PitchShift, AddGaussianSNR
 
-
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
 import io
 
-import warnings
-
 import csv
-
-def fxn():
-    warnings.warn("deprecated", DeprecationWarning)
-
 
 class AudioDataset(Dataset):
     def __init__(self, dataset_path, label_type, augmentation_flag=False):
@@ -74,16 +67,13 @@ class AudioDataset(Dataset):
 
             # only perform data augmentations if this dataset is a train dataset
             if self.augmentation_flag == True:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    fxn()
 
                     # perform any data augmentations
                     transform = Compose([
                         Trim(top_db=30.0, p=0.5),
                         PitchShift(min_semitones=-5.0, max_semitones=5.0, p=0.5),
-                        ApplyImpulseResponse(ir_path=ir_directory, p=0.5),
                         AddGaussianSNR(min_snr_db=5.0, max_snr_db=40.0, p=0.5),
+                        ApplyImpulseResponse(ir_path=ir_directory, p=0.5),
                         Mp3Compression(min_bitrate=32, max_bitrate=64, p=0.5)
                     ])
 
